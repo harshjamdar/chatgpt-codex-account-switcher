@@ -1,0 +1,13 @@
+# Generated release artifacts and local test data
+*.exe
+*.zip
+*.pdb
+*.lnk
+work/
+bin/
+obj/
+profiles/
+**/auth.json
+**/*.sqlite*
+**/*.log
+release-manifest.json

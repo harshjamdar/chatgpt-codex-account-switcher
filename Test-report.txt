@@ -1,0 +1,140 @@
+OPENAI PROFILES 5.1 - TEST REPORT
+Tested: 20 November 2026
+Native package tested: OpenAI.Codex 26.1117.3838.0
+
+RESULT: 88 checks passed across the four suites below.
+Final release checks also passed: native installation lookup, 125-profile
+persistence self-test, live-session launch guard, and exact setup payload hash.
+The backend integration was rerun after RPC changes (9 overlapping checks passed).
+
+FIXES
+- Ignore orphan native worker processes as account sessions. Infer profile
+  ownership from descendants when native relaunch drops the root arguments.
+- Bound native-install lookup and signature helper waits; detect exited RPC
+  helpers promptly and handle interactive callbacks explicitly.
+- Invalidate stale displayed account identity after credential-file changes.
+- Compare sampled chat IDs and metadata; paginate beyond 100 project results;
+  count only the newest state schema instead of adding obsolete schemas.
+- Preserve committed WAL data and recover every touched file if restore fails.
+  Reject mismatched-source, legacy-unscoped and tampered snapshots.
+- Prevent colliding shortcut names from opening the wrong account. Preserve
+  stable IDs and custom store arguments. Suppress launch clicks after dragging.
+- Handle occupied global hotkeys and initialize/dispose tray resources once.
+- Atomically save installer metadata and retry transient profile-file locks.
+
+TEST SCOPE AND LIMITS
+All test stores were isolated. No real company sign-in or model request was
+performed, and no live shared history was restored. Native GUI A/B/A tests used
+signed-out profiles. Backend A/B/A tests used synthetic API credentials with a
+loopback-only provider and verified actual shared chat read/resume behavior.
+Existing user app processes were retained throughout.
+The production guard correctly refused opening another profile while the user's
+app was active. Full switching between authenticated company accounts and SSO
+must still be checked manually after quitting the current native app.
+Cloud ChatGPT Projects/chats are account-bound; local SQLite sharing does not
+merge those cloud accounts or change company permissions.
+No signing certificate/HTTPS release host was available. Unsigned/unconfigured
+update rejection was tested; trusted download success was not tested.
+UI tests exercised dialogs, handlers, rendering, queue/cancel and hotkey routing;
+they do not prove every physical mouse/keyboard gesture on every display.
+
+
+Core regression (28 checks)
+PASS: desktop root inherits profile from child startup data
+PASS: orphan crash reporter does not permanently block switching
+PASS: standalone Codex account session still blocks
+PASS: unreadable desktop command line fails closed
+PASS: real active desktop prevents production profile launch
+PASS: profile homes and browser sessions separate
+PASS: all launch plans use identical shared database root
+PASS: credential changes invalidate verified identity stamp
+PASS: wrong saved identity blocks configured profile
+PASS: favorites reorder without losing stable folders
+PASS: drag reorder across groups persists
+PASS: rename preserves account data folder
+PASS: remove/restore retains saved login
+PASS: history counts use current schema only
+PASS: snapshot validates and excludes credentials
+PASS: backup from a different shared store rejected
+PASS: tampered backup rejected
+PASS: WAL fixture includes committed newer data
+PASS: interrupted restore reports failure
+PASS: interrupted first database preserves WAL-committed data
+PASS: partial multi-database restore recovers every touched file
+PASS: successful restore returns snapshot contents
+PASS: pre-restore snapshots retained
+PASS: diagnostics exclude identity/token/path/profile name
+PASS: unconfigured updates fail closed
+PASS: non-HTTPS update rejected before network
+PASS: current native compatibility marker found
+PASS: profile save recovers from transient file lock
+
+
+Native integration (27 checks)
+PASS: A creates shared local chats and 105 projects
+PASS: B reads original chat ID and synthetic user content
+PASS: B resumes exact original local chat
+PASS: A and B credential files stay distinct
+PASS: opening B does not replace A login
+PASS: A return retains the same shared chat content
+PASS: A return does not overwrite B login
+PASS: history verification matches IDs and paginates past 100 projects
+PASS: production history check respects active user-session guard
+PASS: GUI A starts signed out
+PASS: GUI A installed native GUI opens a matching window
+PASS: GUI A no duplicate private state database
+PASS: GUI A native app leaves scratch login signed out
+PASS: GUI A only scratch app processes cleaned up
+PASS: GUI A existing user app processes untouched
+PASS: GUI B starts signed out
+PASS: GUI B installed native GUI opens a matching window
+PASS: GUI B no duplicate private state database
+PASS: GUI B native app leaves scratch login signed out
+PASS: GUI B only scratch app processes cleaned up
+PASS: GUI B existing user app processes untouched
+PASS: GUI A return starts signed out
+PASS: GUI A return installed native GUI opens a matching window
+PASS: GUI A return no duplicate private state database
+PASS: GUI A return native app leaves scratch login signed out
+PASS: GUI A return only scratch app processes cleaned up
+PASS: GUI A return existing user app processes untouched
+LIMIT: these are synthetic API credentials and signed-out GUI sessions, not real company ChatGPT authentication. No real model request or company sign-in was attempted.
+
+
+Launcher UI (22 checks)
+PASS: plus-button add dialog saves a persistent profile
+PASS: rename menu changes name and keeps folder
+PASS: favorite menu updates persistent state
+PASS: identity settings dialog saves both guards
+PASS: color picker updates profile color
+PASS: custom logo loads into a profile card
+PASS: remove menu retains account folder metadata and marks removed
+PASS: search retains matched card plus add tile
+PASS: empty search result still offers add profile
+PASS: sanitized shortcut names cannot overwrite another account
+PASS: shortcut retains stable profile and store arguments
+PASS: wide and compact interfaces render
+PASS: tray initializes
+PASS: tray initialization is idempotent
+PASS: global picker hotkey (Ctrl+Alt+Shift+O) registration
+PASS: hotkey routing reopens hidden picker
+PASS: login refresh removes stale verified identity from UI cache
+PASS: UI updates account caption after login file changes
+PASS: clicking profile while real account is open queues instead of launching
+PASS: cancel switch clears queued account
+PASS: drag completion suppresses accidental launch clicks
+PASS: tray shutdown releases feature resources
+
+
+Installer (11 checks)
+PASS: installer writes versioned 5.1 payload
+PASS: installer creates isolated Desktop and Start menu shortcuts
+PASS: first installation has no fictional rollback
+PASS: upgrade records both active and previous release
+PASS: upgrade preserves previous executable
+PASS: rollback selects previous executable
+PASS: rollback can return to retained newer release
+PASS: same-release reinstall retains rollback target
+PASS: installed bytes match embedded setup payload
+PASS: installed shortcut opens selected active release
+PASS: installer state commits retain prior metadata backup

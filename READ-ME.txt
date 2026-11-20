@@ -1,0 +1,49 @@
+OPENAI PROFILES 5.1
+Independent launcher for the installed native ChatGPT / Codex app.
+
+START
+1. Close any older launcher window.
+2. Open OpenAIProfiles-V5.1.exe, or use OpenAIProfiles-Setup.exe to install.
+3. Fully quit native ChatGPT/Codex, including tray icons and CLI/IDE sessions,
+   before opening a profile. Selecting a profile while another is active queues it.
+4. Sign in yourself on a profile's first use. Use + to add more profiles.
+
+WHAT CHANGES WHEN YOU SWITCH
+Each profile has a separate login/configuration home and browser session.
+All profiles point to the same local SQLite store (normally your existing
+user .codex folder). Rollout files and attachments remain in their original
+profile folders. Do not manually delete those folders.
+This does not merge cloud ChatGPT chats or cloud Projects. Company workspace
+permissions still determine access and whether a conversation can continue.
+
+ONE ACTIVE ACCOUNT
+The launcher waits for the previous desktop and Codex sessions to exit.
+Orphan crash/GPU/utility workers alone no longer block profile opening.
+Request close & switch sends a normal close request; a tray app may still need
+Quit from its own tray menu. Cancel switch cancels the pending profile.
+The launcher does not force-close your working app or prevent launches made
+outside this utility.
+
+PROFILES AND RECOVERY
+Add, rename, favorite, color, logo, reorder, search, remove and restore are
+available through the cards and their menus. Remove hides a profile and retains
+its login/data folder. Desktop shortcuts use stable profile IDs.
+An existing private history store or conflicting sqlite_home configuration
+stops launch so the launcher does not silently hide or overwrite that data.
+
+Tools provides backups, restore, history verification, diagnostics, compatibility
+checks and update settings. Backups contain SQLite databases, not a complete
+archive of attachments/rollouts or credentials. Restore requires clients closed.
+New backups are bound to their source store. Legacy unscoped snapshots are
+rejected. A pre-restore snapshot is retained, including recovery after failure.
+
+TESTED RELEASE
+See Test-report.txt for 88 checks plus final build checks, fixes and limits.
+Actual native windows opened in scratch A / B / A profiles. The installed backend
+read and resumed shared synthetic chats across separate credential homes.
+Real company sign-in, SSO and company-specific chat access still need a manual
+check. Your active company login was not changed for these tests.
+
+These binaries are unsigned. Trusted update downloads require a publisher
+certificate and HTTPS release host; neither was supplied. See FEATURES-V5.txt.
+This is an independent utility, not an official OpenAI account switcher.

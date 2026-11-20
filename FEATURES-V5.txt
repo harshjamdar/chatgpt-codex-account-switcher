@@ -1,0 +1,80 @@
+OPENAI PROFILES 5.1 - FEATURE GUIDE
+
+Use OpenAIProfiles-V5.1.exe, or OpenAIProfiles-Setup.exe to install for your user.
+Close older picker windows before starting this release.
+
+PROFILE MENU (three dots / right-click)
+- Identity & workspace: inspect cached email/workspace and set optional expected
+  identities. A mismatch blocks launch. Cached token claims are clearly marked
+  unverified; they are not treated as proof of identity.
+- Verify account with native service: asks the installed backend to confirm the
+  account and selected workspace as reported by that service. Close native clients first. An online check
+  may refresh native account metadata, but no model prompt is sent.
+- Verify shared history: compares shared-store counts with what the native
+  service can list. It compares sampled chat IDs and paginated project IDs,
+  reads sampled chat metadata, and flags missing visibility; it does not prove every chat
+  can be continued under a company's policies.
+- Favorites, colors, logos, drag-to-reorder, Move earlier/later and desktop
+  shortcuts. Favorites appear first and in the tray menu.
+- Rename, remove and restore retain the previous data-preservation behavior.
+
+LAUNCHING
+The picker shows compatibility, backup preparation, native-window detection and
+completion as four stages. It waits up to 30 seconds for a matching native
+window. This confirms a window, not a successful sign-in. Tools > Retry last
+launch retries through the same single-account guard. It never kills a second
+app to force a launch. An updated native package requires compatibility review
+in the picker before shortcut launches are allowed.
+
+TOOLS
+- Backup & restore: make checksum-verified SQLite snapshots, view managed
+  snapshots, and restore after confirmation. Restore requires every native
+  ChatGPT/Codex session to be closed. A pre-restore snapshot is retained.
+  Snapshots with modified files, a different source store, an unscoped legacy
+  manifest, or a different database layout are rejected.
+  Profile folders/attachments/rollout files are not deleted or relocated.
+- Export safe diagnostics: writes an allowlisted JSON report with versions,
+  counts and booleans. No account email, token, profile name, local path, chat
+  text, or raw log is exported. The local troubleshooting log is separate.
+- Native compatibility check: verifies installation layout and the profile
+  startup marker. This is not a guarantee of future sign-in compatibility.
+- Minimize to tray; double-click the tray icon to return.
+- Ctrl+Alt+O: global show-picker shortcut; Ctrl+Alt+Shift+O is the fallback
+  when the primary shortcut is occupied. Tools shows the registered shortcut.
+- Ctrl+Alt+1 through 9: favorite profiles while the picker is focused.
+- Ctrl+F: search. Closing the picker exits; minimizing to tray is explicit.
+
+INSTALLATION AND RELEASES
+The per-user setup adds Desktop and Start menu shortcuts. Releases install in
+versioned directories. A later setup keeps the previous release for rollback.
+Rollback is unavailable until a previous installer-managed release exists.
+No administrator account, registry security changes, or trust-store changes
+are required. Saved profile data and local chats remain in their current homes.
+
+SIGNING / UPDATES NEED YOUR RELEASE INFRASTRUCTURE
+These development binaries are UNSIGNED. No publisher certificate or release
+host was supplied. Sign-Release.ps1 signs the launcher/setup using your existing
+trusted code-signing certificate and generates a release manifest. It never
+creates or installs a self-signed trust certificate.
+Configure an HTTPS manifest URL and pinned publisher certificate thumbprint in
+Tools > Update settings. Update downloads must pass both SHA-256 and valid
+Authenticode/pinned-publisher checks. Downloads are not executed automatically.
+Automatic unattended replacement is deliberately not enabled: this release
+downloads verified packages and uses versioned setup for installation/rollback.
+Until hosting and signing are configured, Check updates explains what is missing.
+
+VALIDATION / LIMITS
+Scratch tests cover 125 added profiles, identity mismatch, favorites/reorder,
+backup/restore, tamper rejection, pre-restore recovery, active-process restore
+guard, safe diagnostics and update failure modes. The UI loads at normal and
+compact sizes. Real company sign-in and shared chat access still need manual
+verification with your companies' accounts. No company model prompt was sent
+and no real history was restored during development.
+
+The utility remains independent of OpenAI. Shared local state does not merge
+cloud ChatGPT accounts or bypass company workspace controls.
+
+5.1 REGRESSION RESULTS
+See Test-report.txt for the completed 88-check suite and final build checks.
+Fixes include native-process classification, refreshed account captions, stable
+profile shortcuts, paginated history verification and WAL-safe restore rollback.
