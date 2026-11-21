@@ -14,7 +14,7 @@ An independent Windows launcher for native ChatGPT / Codex account profiles, swi
 
 </div>
 
-![ChatGPT and Codex account switcher on Windows showing three native account profiles, shared local history and the add-profile button](docs/images/chatgpt-codex-account-switcher-windows.png)
+![ChatGPT and Codex account switcher on Windows with a queued profile and the SafeKill and switch button beside normal close and cancel](docs/images/safekill-queued-account-switch.png)
 
 ## Switch work accounts without repeated sign-outs
 
@@ -41,13 +41,13 @@ Organize company or personal profiles, keep recognizable account names, and swit
 
 ## Screenshots
 
-Actual v5.1 launcher renders using demonstration profiles; no real account details are shown.
+Actual v5.1.1 launcher renders using demonstration profiles. The screenshot above shows the queued-switch controls, including **SafeKill & switch**. The confirmation below uses example process IDs; no real account details are shown.
 
 <table>
 <tr>
 <td align="center" width="65%">
-<img src="docs/images/account-profiles-compact-layout.png" alt="Compact Windows account-switcher layout with searchable ChatGPT and Codex profiles" width="640">
-<br><strong>Compact profile picker</strong>
+<img src="docs/images/account-profiles-compact-layout.png" alt="Compact Windows account switcher showing the queued profile and SafeKill and switch button" width="640">
+<br><strong>Compact picker with SafeKill</strong>
 </td>
 <td align="center" width="35%">
 <img src="docs/images/add-native-account-profile.png" alt="Add profile dialog for creating a separately saved native account login" width="360">
@@ -112,9 +112,33 @@ For portable use, open `OpenAIProfiles-V5.1.1.exe` directly. Portable mode still
 
 Select another profile. If a native account is already running, the launcher queues your selection. Use **Request close & switch** to request a normal close, or quit the native app yourself. If it remains in the tray, choose **Quit** there. The next profile opens after the current native sessions exit.
 
-**SafeKill & switch** is available for a stuck queue. It asks for confirmation, tries a normal close, then force-stops only captured native processes whose identity still matches. Unsaved work and running tasks can be lost; an open Codex chat will disconnect. It does not delete saved login or history files. Newly started sessions are left running and keep the switch queued.
+### 6. Use SafeKill if the switch stays queued
 
-Without SafeKill confirmation, the launcher does not force-close ongoing work. **Cancel switch** clears the pending account. Its single-account guard applies to launches made through this utility; it cannot prevent sessions started directly elsewhere.
+**Available in v5.1.1 and later.** Save your work before using it. The button appears in the bottom-right switch controls only after you select a different profile while native sessions are still running.
+
+1. Select the profile you want to open. Its status changes to **Switch to [profile] queued**.
+2. Try **Request close & switch**, or quit the native app from its tray menu first.
+3. If sessions remain and you want to stop them, click **SafeKill & switch**.
+4. Read **Force quit current sessions?**. It lists the captured process count and IDs. Choose **Cancel** to leave them running, or **Force quit & switch** to proceed.
+5. The launcher requests a normal close, waits briefly, then force-stops any remaining captured native processes whose identity still matches. Once all native blockers have exited, it opens the queued profile through the usual launch checks. You may be asked to review compatibility after a native-app update.
+
+<p align="center">
+<img src="docs/images/safekill-force-quit-confirmation.png" alt="SafeKill confirmation dialog warning about unsaved work and offering Cancel or Force quit and switch" width="460">
+<br><em>SafeKill requires explicit confirmation before stopping sessions.</em>
+</p>
+
+**Unsaved work and running tasks may be lost. Any open Codex chat will disconnect.** SafeKill does not delete saved login or history files; forced termination still depends on the native app's crash recovery. It checks each captured process's PID, start time and executable identity before stopping it.
+
+Newly started or protected sessions can keep the switch queued. They are not silently swept into the original force-quit action. Review the remaining sessions before trying again.
+
+| Control | Effect |
+| --- | --- |
+| **Request close & switch** | Requests a normal window close. A tray app may still require Quit. |
+| **SafeKill & switch** | Opens the force-quit warning; nothing is terminated until you confirm. |
+| **Cancel** in the warning | Leaves the captured sessions running and keeps the profile queued. |
+| **Cancel switch** in the picker | Clears the queued profile. |
+
+Without SafeKill confirmation, the launcher does not force-close ongoing work. Its single-account guard applies to launches made through this utility; it cannot prevent sessions started directly elsewhere.
 
 ## How shared local chats and projects work
 
@@ -169,7 +193,7 @@ No. This is an independent project and is not affiliated with or endorsed by Ope
 
 ## v5.1.1: SafeKill for stuck switches
 
-Added an explicit force-quit action for queued switches, with an unsaved-work warning, captured PID/start-time/executable checks, normal-close grace period and a fresh one-account guard before opening the next profile. Focused checks terminated only scratch processes; cancellation retained all existing native sessions. See [SafeKill test results](SafeKill-test-report.txt).
+**45 checks passed** for this update: 12 focused SafeKill checks, 22 launcher UI checks and 11 installer checks. Added an explicit force-quit action for queued switches, with an unsaved-work warning, captured PID/start-time/executable checks, normal-close grace period and a fresh one-account guard before opening the next profile. Focused checks terminated only scratch processes; cancellation retained all existing native sessions. See [SafeKill test results](SafeKill-test-report.txt).
 
 ## Validation and known limits
 
