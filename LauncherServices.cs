@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,8 +13,8 @@ using System.Net;
 using System.IO.Compression;
 using System.Reflection;
 
-[assembly: AssemblyVersion("5.1.0.0")]
-[assembly: AssemblyFileVersion("5.1.0.0")]
+[assembly: AssemblyVersion("5.1.1.0")]
+[assembly: AssemblyFileVersion("5.1.1.0")]
 
 public static class FeatureJson {
  public static JavaScriptSerializer Json {get{return new JavaScriptSerializer {MaxJsonLength=16*1024*1024};}}
@@ -117,7 +117,7 @@ public static class DiagnosticService {
 }
 public class ReleaseManifest {public string Version;public string Url;public string Sha256;}
 public static class ReleaseService {
- public const string Version="5.1.0";
+ public const string Version="5.1.1";
  static void Https(string value){Uri uri;if(!Uri.TryCreate(value,UriKind.Absolute,out uri)||uri.Scheme!="https"||!String.IsNullOrEmpty(uri.UserInfo))throw new Exception("Updates require an HTTPS release URL.");}
  static byte[] Fetch(string url,int limit){
   ServicePointManager.SecurityProtocol|=SecurityProtocolType.Tls12;

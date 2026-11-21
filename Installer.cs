@@ -1,13 +1,13 @@
-﻿using System;using System.IO;using System.Drawing;using System.Linq;using System.Reflection;using System.Windows.Forms;using System.Diagnostics;
-[assembly: AssemblyVersion("5.1.0.0")]
-[assembly: AssemblyFileVersion("5.1.0.0")]
+using System;using System.IO;using System.Drawing;using System.Linq;using System.Reflection;using System.Windows.Forms;using System.Diagnostics;
+[assembly: AssemblyVersion("5.1.1.0")]
+[assembly: AssemblyFileVersion("5.1.1.0")]
 class Installer {
  static string Root=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"OpenAIProfilesLauncher");
  static string State=Path.Combine(Root,"installation.txt");
  static string DesktopRoot=Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
  static string ProgramsRoot=Environment.GetFolderPath(Environment.SpecialFolder.Programs);
  static void SaveState(string active,string previous){string temp=State+"."+Guid.NewGuid().ToString("N")+".tmp";File.WriteAllLines(temp,new[]{active,previous??""});if(File.Exists(State))File.Replace(temp,State,State+".bak");else File.Move(temp,State);}
- static string Version="5.1.0";
+ static string Version="5.1.1";
  static string Executable(string version){if(!System.Text.RegularExpressions.Regex.IsMatch(version??"",@"^[0-9]+\.[0-9]+\.[0-9]+$"))throw new Exception("Invalid installed version.");return Path.Combine(Root,"versions",version,"OpenAIProfiles.exe");}
  static void Shortcuts(string exe){Type type=Type.GetTypeFromProgID("WScript.Shell");dynamic shell=Activator.CreateInstance(type);string folder=Path.Combine(ProgramsRoot,"OpenAI Profiles");Directory.CreateDirectory(folder);foreach(string file in new[]{Path.Combine(folder,"OpenAI Profiles.lnk"),Path.Combine(DesktopRoot,"OpenAI Profiles.lnk")}){dynamic link=shell.CreateShortcut(file);link.TargetPath=exe;link.WorkingDirectory=Path.GetDirectoryName(exe);link.Description="Independent native account launcher";link.Save();}}
  static string Install(){Directory.CreateDirectory(Root);string target=Executable(Version);Directory.CreateDirectory(Path.GetDirectoryName(target));string temp=target+".install-"+Guid.NewGuid().ToString("N");using(var stream=Assembly.GetExecutingAssembly().GetManifestResourceStream("Launcher.exe"))using(var output=File.Create(temp)){if(stream==null)throw new Exception("Missing installer payload.");stream.CopyTo(output);}

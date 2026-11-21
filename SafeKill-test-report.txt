@@ -1,0 +1,69 @@
+SAFEKILL & SWITCH - V5.1.1 TEST REPORT
+22 November 2026
+
+45 checks passed (12 focused, 22 launcher UI, 11 installer), plus native-app lookup.
+Force termination tests used two disposable scratch executables named codex.exe.
+Only the explicitly captured fixture was stopped. An uncaptured same-name fixture
+was retained; identity changes and exited processes were safely skipped.
+UI confirmation was cancelled while real native sessions were running, and every
+captured baseline session remained alive. No real login/history files were changed.
+A full force-quit of the user's live app was not executed because it would end
+this chat. Post-stop launching still uses the existing production one-account guard.
+
+SafeKill cannot guarantee that unsaved work survives force termination. It does
+not delete saved history/login files. SQLite crash recovery and app-specific
+recovery still depend on the native app. A protected or newly started session
+can keep the switch queued rather than bypass the guard.
+
+SafeKill focused checks
+PASS: captured blockers include native worker descendants only
+PASS: process identity matches PID, start time, executable and name
+PASS: changed start identity is never killed
+PASS: changed executable path is never killed
+PASS: explicitly captured scratch native process is terminated
+PASS: uncaptured process with same name is left running
+PASS: already exited target is handled without error
+PASS: SafeKill button appears only for queued switching
+PASS: force quit warning mentions unsaved work
+PASS: confirmation cancellation prevents termination
+PASS: controls reenable after cancellation
+PASS: cancel queue hides SafeKill
+
+
+Launcher UI regression
+PASS: plus-button add dialog saves a persistent profile
+PASS: rename menu changes name and keeps folder
+PASS: favorite menu updates persistent state
+PASS: identity settings dialog saves both guards
+PASS: color picker updates profile color
+PASS: custom logo loads into a profile card
+PASS: remove menu retains account folder metadata and marks removed
+PASS: search retains matched card plus add tile
+PASS: empty search result still offers add profile
+PASS: sanitized shortcut names cannot overwrite another account
+PASS: shortcut retains stable profile and store arguments
+PASS: wide and compact interfaces render
+PASS: tray initializes
+PASS: tray initialization is idempotent
+PASS: global picker hotkey (Ctrl+Alt+Shift+O) registration
+PASS: hotkey routing reopens hidden picker
+PASS: login refresh removes stale verified identity from UI cache
+PASS: UI updates account caption after login file changes
+PASS: clicking profile while real account is open queues instead of launching
+PASS: cancel switch clears queued account
+PASS: drag completion suppresses accidental launch clicks
+PASS: tray shutdown releases feature resources
+
+
+Installer regression
+PASS: installer writes versioned 5.1.1 payload
+PASS: installer creates isolated Desktop and Start menu shortcuts
+PASS: first installation has no fictional rollback
+PASS: upgrade records both active and previous release
+PASS: upgrade preserves previous executable
+PASS: rollback selects previous executable
+PASS: rollback can return to retained newer release
+PASS: same-release reinstall retains rollback target
+PASS: installed bytes match embedded setup payload
+PASS: installed shortcut opens selected active release
+PASS: installer state commits retain prior metadata backup

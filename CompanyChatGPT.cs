@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Drawing;
@@ -385,5 +385,30 @@ public static class Program {
     }finally{mutex.ReleaseMutex();}
    }
   }catch(Exception ex){if(quiet){try{File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"launcher-check-error.txt"),ex.ToString());}catch{}}else MessageBox.Show(ex.Message,"OpenAI Profiles",MessageBoxButtons.OK,MessageBoxIcon.Information);return 1;}
+ }
+}
+
+// A captured identity prevents a recycled PID from terminating a new process.
+public sealed class NativeStopTarget { public int Id; public long Started; public string Path,Name; }
+public static class NativeSessionStop {
+ public static HashSet<int> SelectIds(IList<NativeProcessRow> rows,IEnumerable<int> blockers){
+  var ids=new HashSet<int>(blockers);bool changed=true;
+  while(changed){changed=false;foreach(var row in rows)if(ids.Contains(row.ParentId)&&(String.Equals(row.Name,"ChatGPT.exe",StringComparison.OrdinalIgnoreCase)||String.Equals(row.Name,"codex.exe",StringComparison.OrdinalIgnoreCase)))if(ids.Add(row.Id))changed=true;}
+  return ids;
+ }
+ public static List<NativeStopTarget> Capture(ProfileStore store){
+  var blockers=NativeApp.Running(store);var rows=new List<NativeProcessRow>();
+  using(var search=new ManagementObjectSearcher("SELECT Name,ProcessId,ParentProcessId FROM Win32_Process WHERE Name='ChatGPT.exe' OR Name='codex.exe'"))using(var values=search.Get())foreach(ManagementObject row in values)using(row)rows.Add(new NativeProcessRow{Id=Convert.ToInt32(row["ProcessId"]),ParentId=Convert.ToInt32(row["ParentProcessId"]),Name=Convert.ToString(row["Name"])});
+  var result=new List<NativeStopTarget>();foreach(int id in SelectIds(rows,blockers.Select(x=>x.Id)))try{using(var process=Process.GetProcessById(id)){result.Add(new NativeStopTarget{Id=id,Started=process.StartTime.ToUniversalTime().Ticks,Path=process.MainModule.FileName,Name=process.ProcessName});}}catch(ArgumentException){}catch(InvalidOperationException){}
+  return result;
+ }
+ public static bool Matches(Process process,NativeStopTarget target){return process.Id==target.Id&&!process.HasExited&&process.StartTime.ToUniversalTime().Ticks==target.Started&&String.Equals(process.ProcessName,target.Name,StringComparison.OrdinalIgnoreCase)&&String.Equals(process.MainModule.FileName,target.Path,StringComparison.OrdinalIgnoreCase);}
+ public static void Stop(IList<NativeStopTarget> targets){
+  // First give only the captured native windows a chance to close normally.
+  foreach(var target in targets)try{using(var process=Process.GetProcessById(target.Id))if(Matches(process,target))process.CloseMainWindow();}catch(ArgumentException){}catch(InvalidOperationException){}
+  Thread.Sleep(2000);var failures=new List<int>();
+  foreach(var target in targets.OrderBy(x=>String.Equals(x.Name,"ChatGPT",StringComparison.OrdinalIgnoreCase)?1:0))try{using(var process=Process.GetProcessById(target.Id)){if(!Matches(process,target))continue;process.Kill();if(!process.WaitForExit(5000))failures.Add(target.Id);}}catch(ArgumentException){}catch(InvalidOperationException){}catch(System.ComponentModel.Win32Exception){failures.Add(target.Id);}
+  NativeApp.Log("User-confirmed force quit completed; captured="+targets.Count+"; failed="+failures.Count);
+  if(failures.Count>0)throw new Exception("Some captured native processes could not be stopped (PID "+String.Join(", ",failures)+"). The next account will stay queued until they exit.");
  }
 }

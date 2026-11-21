@@ -3,7 +3,7 @@ Independent launcher for the installed native ChatGPT / Codex app.
 
 START
 1. Close any older launcher window.
-2. Open OpenAIProfiles-V5.1.exe, or use OpenAIProfiles-Setup.exe to install.
+2. Open OpenAIProfiles-V5.1.1.exe, or use OpenAIProfiles-Setup.exe to install.
 3. Fully quit native ChatGPT/Codex, including tray icons and CLI/IDE sessions,
    before opening a profile. Selecting a profile while another is active queues it.
 4. Sign in yourself on a profile's first use. Use + to add more profiles.
@@ -47,3 +47,10 @@ check. Your active company login was not changed for these tests.
 These binaries are unsigned. Trusted update downloads require a publisher
 certificate and HTTPS release host; neither was supplied. See FEATURES-V5.txt.
 This is an independent utility, not an official OpenAI account switcher.
+
+V5.1.1 - SAFEKILL & SWITCH
+When a profile is queued, SafeKill & switch asks for confirmation before stopping
+captured native sessions. It tries a normal close first, then checks PID, start
+time and executable before force termination. Unsaved work/tasks can be lost,
+and open Codex chats disconnect. Saved login/history files are not deleted.
+New sessions are not killed; the launch guard is checked again before switching.

@@ -71,8 +71,8 @@ Open the **[latest release](https://github.com/harshjamdar/chatgpt-codex-account
 | File | Choose this when… |
 | --- | --- |
 | **`OpenAIProfiles-Setup.exe`** | You want the recommended per-user installation with Desktop and Start menu shortcuts. |
-| `OpenAIProfiles-V5.1.exe` | You want to run the portable launcher without installing it. |
-| `OpenAIProfiles-V5.1-Package.zip` | You want the app, installer, source/build files and documentation together. Extract it before use. |
+| `OpenAIProfiles-V5.1.1.exe` | You want to run the portable launcher without installing it. |
+| `OpenAIProfiles-V5.1.1-Package.zip` | You want the app, installer, source/build files and documentation together. Extract it before use. |
 | `SHA256SUMS.txt` | You want to compare download checksums. |
 
 **Download an EXE under Assets, rather than GitHub's automatically generated “Source code” archive, to run the app.**
@@ -98,7 +98,7 @@ Compare the result with the matching filename in the release's `SHA256SUMS.txt`.
 2. Run **`OpenAIProfiles-Setup.exe`** and select **Install / update**.
 3. Select **Open launcher**, or use the **OpenAI Profiles** Desktop / Start menu shortcut. The current app and shortcut labels use this shorter name.
 
-For portable use, open `OpenAIProfiles-V5.1.exe` directly. Portable mode still saves profile data under your Windows user account; it does not keep credentials beside the EXE.
+For portable use, open `OpenAIProfiles-V5.1.1.exe` directly. Portable mode still saves profile data under your Windows user account; it does not keep credentials beside the EXE.
 
 ### 4. Add your first account
 
@@ -112,7 +112,9 @@ For portable use, open `OpenAIProfiles-V5.1.exe` directly. Portable mode still s
 
 Select another profile. If a native account is already running, the launcher queues your selection. Use **Request close & switch** to request a normal close, or quit the native app yourself. If it remains in the tray, choose **Quit** there. The next profile opens after the current native sessions exit.
 
-The launcher does not force-close ongoing work. **Cancel switch** clears the pending account. Its single-account guard applies to launches made through this utility; it cannot prevent sessions started directly elsewhere.
+**SafeKill & switch** is available for a stuck queue. It asks for confirmation, tries a normal close, then force-stops only captured native processes whose identity still matches. Unsaved work and running tasks can be lost; an open Codex chat will disconnect. It does not delete saved login or history files. Newly started sessions are left running and keep the switch queued.
+
+Without SafeKill confirmation, the launcher does not force-close ongoing work. **Cancel switch** clears the pending account. Its single-account guard applies to launches made through this utility; it cannot prevent sessions started directly elsewhere.
 
 ## How shared local chats and projects work
 
@@ -130,7 +132,7 @@ Preexisting private history or a conflicting `sqlite_home` configuration blocks 
 
 | Problem | What to check |
 | --- | --- |
-| Profile stays queued | Fully quit native windows, tray apps, Codex CLI and IDE sessions. Use Cancel switch if needed. |
+| Profile stays queued | Fully quit native windows, tray apps, Codex CLI and IDE sessions. Use Cancel switch if needed, or explicitly confirm **SafeKill & switch** after saving your work. |
 | Profile does not open | Use **Tools → Native compatibility check**, review the launch error, then retry. A native-app update can change compatibility. |
 | The wrong account appears | Inspect the profile's Identity & workspace settings and sign-in inside the native app. Optional expected-identity guards can block mismatches. |
 | Local chats or projects look different | Verify the shared store and run **Verify shared history**. Cloud history and account permissions remain separate. |
@@ -165,6 +167,10 @@ Yes. Removal hides the profile while retaining its folder and saved login. Use R
 
 No. This is an independent project and is not affiliated with or endorsed by OpenAI.
 
+## v5.1.1: SafeKill for stuck switches
+
+Added an explicit force-quit action for queued switches, with an unsaved-work warning, captured PID/start-time/executable checks, normal-close grace period and a fresh one-account guard before opening the next profile. Focused checks terminated only scratch processes; cancellation retained all existing native sessions. See [SafeKill test results](SafeKill-test-report.txt).
+
 ## Validation and known limits
 
 **88 checks passed** across core regression, native integration, launcher UI and installer suites, plus final build checks. [Read the detailed test report](Test-report.txt).
@@ -181,7 +187,7 @@ Clone this repository and run Windows PowerShell in its directory:
 .\Build-Launcher.ps1
 ```
 
-The script uses the Windows .NET Framework C# compiler and WPF assemblies. It produces `OpenAIProfiles-V5.exe` (file version 5.1.0.0) and `OpenAIProfiles-Setup.exe`. The portable release download is named `OpenAIProfiles-V5.1.exe` and matches the build output.
+The script uses the Windows .NET Framework C# compiler and WPF assemblies. It produces `OpenAIProfiles-V5.exe` (file version 5.1.1.0) and `OpenAIProfiles-Setup.exe`. The portable release download is named `OpenAIProfiles-V5.1.1.exe` and matches the build output.
 
 The `tests/` directory contains development harness sources. Some require isolated fixtures and the compatible installed app; they are not a standalone one-command suite. Never run restore tests against a live store.
 
